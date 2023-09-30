@@ -18,7 +18,7 @@ import {
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
-import { SearchPopover } from "components/SearchPopover/SearchPopover";
+import { WorkspacesButton } from "components/WorkspacesButton/WorkspacesButton";
 
 export const Language = {
   pageTitle: "Workspaces",
@@ -73,7 +73,7 @@ export const WorkspacesPageView: FC<
 
   return (
     <Margins>
-      <PageHeader actions={canCheckWorkspaces && <SearchPopover />}>
+      <PageHeader actions={canCheckWorkspaces && <WorkspacesButton />}>
         <PageHeaderTitle>
           <Stack direction="row" spacing={1} alignItems="center">
             <span>{Language.pageTitle}</span>

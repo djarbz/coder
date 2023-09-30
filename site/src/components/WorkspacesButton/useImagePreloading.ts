@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const MAX_RETRIES = 3;
 
@@ -70,6 +70,38 @@ export function preloadImages(imageUrls?: readonly string[]): () => void {
       window.clearTimeout(id);
     }
   };
+}
+
+// Shared mutable throttle state for all components
+
+/**
+ * Exposes a throttled version of preloadImages.
+ *
+ * The throttling state is always associated with the component instance,
+ * meaning that one component being throttled won't prevent other components
+ * from making requests.
+ */
+export function useThrottledPreloadImages() {
+  const throttledRef = useRef(false);
+
+  return useCallback((imgUrls?: readonly string[]) => {
+    if (throttledRef.current || imgUrls === undefined) {
+      // Noop
+      return () => {};
+    }
+
+    throttledRef.current = true;
+    const cleanupPreload = preloadImages(imgUrls);
+    const timeoutId = window.setTimeout(() => {
+      throttledRef.current = false;
+    }, 500);
+
+    return () => {
+      cleanupPreload();
+      window.clearTimeout(timeoutId);
+      throttledRef.current = false;
+    };
+  }, []);
 }
 
 export function useImagePreloading(imgUrls?: readonly string[]) {
