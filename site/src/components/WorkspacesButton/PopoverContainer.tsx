@@ -35,6 +35,10 @@ export function PopoverContainer({ children, anchorButton }: Props) {
   const anchorButtonRef = useRef<HTMLButtonElement | null>(null);
   const [loadedButton, setLoadedButton] = useState<HTMLButtonElement>();
 
+  // Makes container listen to changes in button. If this approach becomes
+  // untenable in the future, it can be replaced with React.cloneElement, but
+  // the trade-off there is that every single anchorButton will need to be
+  // wrapped inside React.forwardRef, making the abstraction leak a little more
   useEffect(() => {
     const buttonContainer = buttonContainerRef.current;
     if (buttonContainer === null) {
