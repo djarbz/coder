@@ -53,7 +53,7 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
           paddingX: 2,
           marginBottom: 2,
           overflowY: "hidden",
-          "&:first-child": {
+          "&:first-of-type": {
             marginTop: 2,
           },
         }}
