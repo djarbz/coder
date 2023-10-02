@@ -28,7 +28,7 @@ export const SearchBox = forwardRef(function SearchBox(
   ref?: ForwardedRef<HTMLInputElement>,
 ) {
   const hookId = useId();
-  const inputId = `${hookId}-${SearchBox.name}`;
+  const inputId = `${hookId}-${SearchBox.name}-input`;
 
   return (
     <Box
@@ -54,7 +54,7 @@ export const SearchBox = forwardRef(function SearchBox(
       </Box>
 
       <Box
-        id={hookId}
+        id={inputId}
         tabIndex={0}
         component="input"
         type="text"
@@ -68,7 +68,7 @@ export const SearchBox = forwardRef(function SearchBox(
           border: 0,
           background: "none",
           width: "100%",
-          marginLeft: 2,
+          paddingLeft: 2,
           outline: 0,
           "&::placeholder": {
             color: (theme) => theme.palette.text.secondary,
