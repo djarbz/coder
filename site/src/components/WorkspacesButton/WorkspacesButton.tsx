@@ -18,6 +18,8 @@ import { SearchBox } from "./SearchBox";
 import { EmptyState } from "components/EmptyState/EmptyState";
 import { Avatar } from "components/Avatar/Avatar";
 
+const ICON_SIZE = 18;
+
 function sortTemplatesByUsersDesc(
   templates: readonly Template[],
   searchTerm: string,
@@ -35,8 +37,6 @@ function sortTemplatesByUsersDesc(
 }
 
 function WorkspaceResultsRow({ template }: { template: Template }) {
-  const iconSize = 18;
-
   return (
     <Link
       key={template.id}
@@ -63,9 +63,9 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
           fitImage
           alt={template.display_name || "Coder template"}
           sx={{
-            width: `${iconSize}px`,
-            height: `${iconSize}px`,
-            fontSize: `${iconSize * 0.5}px`,
+            width: `${ICON_SIZE}px`,
+            height: `${ICON_SIZE}px`,
+            fontSize: `${ICON_SIZE * 0.5}px`,
             fontWeight: 700,
           }}
         >
@@ -102,8 +102,9 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
             }}
           >
             {/*
-             * There are some templates that have -1 as their count –
-             * basically functioning like a null count in JS
+             * There are some templates that have -1 as their user count –
+             * basically functioning like a null value in JS. Can safely just
+             * treat them as if they were 0.
              */}
             {template.active_user_count <= 0
               ? "No"
@@ -205,7 +206,11 @@ export function WorkspacesButton() {
               borderTop: (theme) => `1px solid ${theme.palette.divider}`,
             }}
           >
-            <OpenIcon sx={{ fontSize: "14px" }} />
+            <Box component="span" sx={{ width: `${ICON_SIZE}px` }}>
+              <OpenIcon
+                sx={{ fontSize: "14px", marginX: "auto", display: "block" }}
+              />
+            </Box>
             <span>See all templates</span>
           </Box>
         </Link>
