@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import Box from "@mui/system/Box";
 
 type Props = {
   children: ReactNode;
@@ -15,6 +16,14 @@ export function OverflowY({
 }: Props) {
   // Component should only reference min/max heights in implementation
   return (
-    <div style={{ height: `${height}px`, overflowY: "auto" }}>{children}</div>
+    <Box
+      sx={{
+        width: "100%",
+        height: `${height}px`,
+        overflowY: "auto",
+      }}
+    >
+      {children}
+    </Box>
   );
 }
