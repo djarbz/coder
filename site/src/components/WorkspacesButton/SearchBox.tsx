@@ -7,7 +7,7 @@ import {
 
 import Box from "@mui/system/Box";
 import SearchIcon from "@mui/icons-material/SearchOutlined";
-import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { visuallyHidden } from "@mui/utils";
 
 type Props = {
   value: string;
@@ -49,9 +49,9 @@ export const SearchBox = forwardRef(function SearchBox(
         }}
       />
 
-      <VisuallyHidden asChild>
-        <label htmlFor={inputId}>{label}</label>
-      </VisuallyHidden>
+      <Box component="label" sx={visuallyHidden} htmlFor={inputId}>
+        {label}
+      </Box>
 
       <Box
         id={hookId}
