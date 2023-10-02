@@ -5,12 +5,12 @@ import { useThrottledPreloadImages } from "./useImagePreloading";
 import { useQuery } from "@tanstack/react-query";
 import { type Template } from "api/typesGenerated";
 import { templates } from "api/queries/templates";
-
 import { Link as RouterLink } from "react-router-dom";
 import Box from "@mui/system/Box";
 import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/AddOutlined";
 import Link from "@mui/material/Link";
+import AddIcon from "@mui/icons-material/AddOutlined";
+import OpenIcon from "@mui/icons-material/OpenInNewOutlined";
 import { Loader } from "components/Loader/Loader";
 import { PopoverContainer } from "./PopoverContainer";
 import { OverflowY } from "./OverflowY";
@@ -28,13 +28,83 @@ function sortTemplatesByUsersDesc(
   const termMatcher = new RegExp(searchTerm.replaceAll(/\s+/g, ".*?"), "i");
   return templates
     .filter((template) => termMatcher.test(template.display_name))
-    .sort((t1, t2) => t1.active_user_count - t2.active_user_count);
+    .sort((t1, t2) => t1.active_user_count - t2.active_user_count)
+    .slice(0, 10);
 }
 
-/**
- * Trying to put together the component in the dumbest, most naive way possible
- * at first. Will break apart and figure out what abstraction make sense later.
- */
+function WorkspaceResultsRow({ template }: { template: Template }) {
+  return (
+    <Link
+      key={template.id}
+      component={RouterLink}
+      // Sending user directly to workspace creation page for UX
+      // reasons; avoids extra clicks on the user's part
+      to={`/templates/${template.name}/workspace`}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          columnGap: 2,
+          alignItems: "center",
+          paddingX: 2,
+          marginBottom: 2,
+          overflowY: "hidden",
+          "&:first-child": {
+            marginTop: 2,
+          },
+        }}
+      >
+        <Box
+          component="img"
+          src={template.icon}
+          alt={template.display_name || "Coder template"}
+          sx={{ width: "20px", height: "20px" }}
+        />
+
+        <Box
+          sx={{
+            lineHeight: 1,
+            width: "100%",
+            overflow: "hidden",
+            color: "white",
+          }}
+        >
+          <Box
+            component="p"
+            sx={{
+              marginY: 0,
+              paddingBottom: 0.5,
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {template.display_name || "[Unnamed]"}
+          </Box>
+
+          <Box
+            component="p"
+            sx={{
+              marginY: 0,
+              fontSize: 14,
+              color: (theme) => theme.palette.text.secondary,
+            }}
+          >
+            {/*
+             * There are some templates that have -1 as their count –
+             * basically functioning like a null count in JS
+             */}
+            {template.active_user_count <= 0
+              ? "No"
+              : template.active_user_count}{" "}
+            developer
+            {template.active_user_count === 1 ? "" : "s"}
+          </Box>
+        </Box>
+      </Box>
+    </Link>
+  );
+}
+
 export function WorkspacesButton() {
   const organizationId = useOrganizationId();
   const permissions = usePermissions();
@@ -70,41 +140,33 @@ export function WorkspacesButton() {
         label="Template select for workspace"
       />
 
-      <OverflowY height={380}>
-        {templatesQuery.isLoading ? (
-          <Loader size={14} />
-        ) : (
-          processed.map((template) => (
-            <Link
-              key={template.id}
-              component={RouterLink}
-              // Sending user directly to workspace creation page for UX
-              // reasons; avoids extra clicks on the user's part
-              to={`/templates/${template.name}/workspace`}
-            >
-              <img
-                src={template.icon}
-                alt={template.display_name}
-                style={{ width: "20px", height: "20px" }}
-              />
-
-              <p>{template.display_name}</p>
-
-              <p>
-                {template.active_user_count === 0
-                  ? "No"
-                  : template.active_user_count}{" "}
-                developer
-                {template.active_user_count === 1 ? "" : "s"}
-              </p>
-            </Link>
-          ))
-        )}
-      </OverflowY>
+      <Box>
+        <OverflowY height={380}>
+          {templatesQuery.isLoading ? (
+            <Loader size={14} />
+          ) : (
+            processed.map((template) => (
+              <WorkspaceResultsRow key={template.id} template={template} />
+            ))
+          )}
+        </OverflowY>
+      </Box>
 
       {permissions.createTemplates && (
         <Link component={RouterLink} to="/templates">
-          <Box sx={{ paddingX: 2, paddingY: 1.5 }}>See all templates</Box>
+          <Box
+            sx={{
+              padding: 2,
+              display: "flex",
+              flexFlow: "row nowrap",
+              alignItems: "center",
+              columnGap: 1,
+              borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <OpenIcon sx={{ fontSize: "14px" }} />
+            <span>See all templates</span>
+          </Box>
         </Link>
       )}
     </PopoverContainer>
