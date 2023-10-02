@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { useOrganizationId, usePermissions } from "hooks";
-import { useThrottledPreloadImages } from "./useImagePreloading";
+import { useImagePreloading } from "./useImagePreloading";
 
 import { useQuery } from "@tanstack/react-query";
 import { type Template } from "api/typesGenerated";
@@ -15,6 +15,8 @@ import { Loader } from "components/Loader/Loader";
 import { PopoverContainer } from "./PopoverContainer";
 import { OverflowY } from "./OverflowY";
 import { SearchBox } from "./SearchBox";
+import { EmptyState } from "components/EmptyState/EmptyState";
+import { Avatar } from "components/Avatar/Avatar";
 
 function sortTemplatesByUsersDesc(
   templates: readonly Template[],
@@ -25,14 +27,16 @@ function sortTemplatesByUsersDesc(
     return templates;
   }
 
-  const termMatcher = new RegExp(searchTerm.replaceAll(/\s+/g, ".*?"), "i");
+  const termMatcher = new RegExp(searchTerm.replaceAll(/[^\w]/g, "."), "i");
   return templates
     .filter((template) => termMatcher.test(template.display_name))
-    .sort((t1, t2) => t1.active_user_count - t2.active_user_count)
+    .sort((t1, t2) => t2.active_user_count - t1.active_user_count)
     .slice(0, 10);
 }
 
 function WorkspaceResultsRow({ template }: { template: Template }) {
+  const iconSize = 18;
+
   return (
     <Link
       key={template.id}
@@ -44,7 +48,7 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
       <Box
         sx={{
           display: "flex",
-          columnGap: 2,
+          columnGap: 1,
           alignItems: "center",
           paddingX: 2,
           marginBottom: 2,
@@ -54,12 +58,19 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
           },
         }}
       >
-        <Box
-          component="img"
+        <Avatar
           src={template.icon}
+          fitImage
           alt={template.display_name || "Coder template"}
-          sx={{ width: "20px", height: "20px" }}
-        />
+          sx={{
+            width: `${iconSize}px`,
+            height: `${iconSize}px`,
+            fontSize: `${iconSize * 0.5}px`,
+            fontWeight: 700,
+          }}
+        >
+          {template.display_name || "-"}
+        </Avatar>
 
         <Box
           sx={{
@@ -74,6 +85,7 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
             sx={{
               marginY: 0,
               paddingBottom: 0.5,
+              overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
             }}
@@ -108,27 +120,53 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
 export function WorkspacesButton() {
   const organizationId = useOrganizationId();
   const permissions = usePermissions();
-  const templatesQuery = useQuery(templates(organizationId));
-  const preloadImages = useThrottledPreloadImages();
+
+  const templatesQuery = useQuery({
+    ...templates(organizationId),
+
+    // Creating icons via the selector to guarantee icons array stays as stable
+    // as possible, and only changes when the query produces new data
+    select: (templates) => {
+      return {
+        list: templates,
+        icons: templates.map((t) => t.icon),
+      };
+    },
+  });
+
+  useImagePreloading(templatesQuery.data?.icons);
 
   // Dataset should always be small enough that client-side filtering should be
   // good enough. Can swap out down the line if it becomes an issue
   const [searchTerm, setSearchTerm] = useState("");
   const processed = sortTemplatesByUsersDesc(
-    templatesQuery?.data ?? [],
+    templatesQuery.data?.list ?? [],
     searchTerm,
   );
 
+  let emptyState: ReactNode = undefined;
+  if (templatesQuery.data?.list.length === 0) {
+    emptyState = (
+      <EmptyState
+        message="No templates yet"
+        cta={
+          <Link to="/templates" component={RouterLink}>
+            Create one now.
+          </Link>
+        }
+      />
+    );
+  } else if (processed.length === 0) {
+    emptyState = <EmptyState message="No templates match your text" />;
+  }
+
   return (
     <PopoverContainer
+      originX={-115}
+      originY="bottom"
+      sx={{ display: "flex", flexFlow: "column nowrap" }}
       anchorButton={
-        <Button
-          startIcon={<AddIcon />}
-          variant="contained"
-          onPointerEnter={() => {
-            void preloadImages(templatesQuery.data?.map((t) => t.icon));
-          }}
-        >
+        <Button startIcon={<AddIcon />} variant="contained">
           Create Workspace&hellip;
         </Button>
       }
@@ -138,19 +176,22 @@ export function WorkspacesButton() {
         onValueChange={(newValue) => setSearchTerm(newValue)}
         placeholder="Type/select a workspace template"
         label="Template select for workspace"
+        sx={{ flexShrink: 0 }}
       />
 
-      <Box>
-        <OverflowY height={380}>
-          {templatesQuery.isLoading ? (
-            <Loader size={14} />
-          ) : (
-            processed.map((template) => (
+      <OverflowY maxHeight={380} sx={{ flexShrink: 1 }}>
+        {templatesQuery.isLoading ? (
+          <Loader size={14} />
+        ) : (
+          <>
+            {processed.map((template) => (
               <WorkspaceResultsRow key={template.id} template={template} />
-            ))
-          )}
-        </OverflowY>
-      </Box>
+            ))}
+
+            {emptyState}
+          </>
+        )}
+      </OverflowY>
 
       {permissions.createTemplates && (
         <Link component={RouterLink} to="/templates">
