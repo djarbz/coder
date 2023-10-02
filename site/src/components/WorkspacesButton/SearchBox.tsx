@@ -8,6 +8,7 @@ import {
 import Box from "@mui/system/Box";
 import SearchIcon from "@mui/icons-material/SearchOutlined";
 import { visuallyHidden } from "@mui/utils";
+import { type SystemStyleObject } from "@mui/system";
 
 type Props = {
   value: string;
@@ -15,6 +16,7 @@ type Props = {
   onKeyDown?: (event: KeyboardEvent) => void;
   placeholder?: string;
   label?: string;
+  sx?: SystemStyleObject;
 };
 
 export const SearchBox = forwardRef(function SearchBox(
@@ -24,6 +26,7 @@ export const SearchBox = forwardRef(function SearchBox(
     onKeyDown,
     label = "Search",
     placeholder = "Search...",
+    sx = {},
   }: Props,
   ref?: ForwardedRef<HTMLInputElement>,
 ) {
@@ -39,6 +42,7 @@ export const SearchBox = forwardRef(function SearchBox(
         paddingRight: 2,
         height: 40,
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+        ...sx,
       }}
       onKeyDown={onKeyDown}
     >

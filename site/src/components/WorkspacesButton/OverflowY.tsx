@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
-import Box from "@mui/system/Box";
 import { type SystemStyleObject } from "@mui/system";
+import Box from "@mui/system/Box";
 
 type Props = {
   children: ReactNode;

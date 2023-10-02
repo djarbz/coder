@@ -1,13 +1,14 @@
 import {
   type KeyboardEvent,
-  type PropsWithChildren,
   type ReactElement,
   useEffect,
   useRef,
   useState,
+  PropsWithChildren,
 } from "react";
 
-import Popover from "@mui/material/Popover";
+import { type Theme, type SystemStyleObject } from "@mui/system";
+import Popover, { type PopoverOrigin } from "@mui/material/Popover";
 
 type Props = PropsWithChildren<{
   /**
@@ -15,6 +16,10 @@ type Props = PropsWithChildren<{
    * or event handlers attached to the button.
    */
   anchorButton: ReactElement;
+  width?: number;
+  originX?: PopoverOrigin["horizontal"];
+  originY?: PopoverOrigin["vertical"];
+  sx?: SystemStyleObject<Theme>;
 }>;
 
 function getButton(container: HTMLElement) {
@@ -24,7 +29,14 @@ function getButton(container: HTMLElement) {
   );
 }
 
-export function PopoverContainer({ children, anchorButton }: Props) {
+export function PopoverContainer({
+  children,
+  anchorButton,
+  originX = 0,
+  originY = 0,
+  width = 320,
+  sx = {},
+}: Props) {
   const buttonContainerRef = useRef<HTMLDivElement>(null);
 
   // Ref value is for effects and event listeners; state value is for React
@@ -109,10 +121,13 @@ export function PopoverContainer({ children, anchorButton }: Props) {
         open={loadedButton !== undefined}
         anchorEl={loadedButton}
         onClose={() => setLoadedButton(undefined)}
+        anchorOrigin={{ horizontal: originX, vertical: originY }}
         sx={{
           "& .MuiPaper-root": {
-            width: 320,
+            overflowY: "hidden",
+            width,
             paddingY: 0,
+            ...sx,
           },
         }}
         transitionDuration={{
