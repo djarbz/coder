@@ -90,14 +90,16 @@ export function PopoverContainer({ children, anchorButton }: Props) {
 
   return (
     <>
+      {/* Cannot switch with Box component; breaks implementation */}
       <div
         // Disabling semantics for the container does not affect the button
-        // placed inside; that button should still be fully accessible
+        // placed inside; the button should still be fully accessible
         role="none"
         tabIndex={-1}
         ref={buttonContainerRef}
         onClick={onInnerButtonInteraction}
         onKeyDown={onInnerButtonKeydown}
+        // Only style that container should ever need
         style={{ width: "fit-content" }}
       >
         {anchorButton}
@@ -107,6 +109,16 @@ export function PopoverContainer({ children, anchorButton }: Props) {
         open={loadedButton !== undefined}
         anchorEl={loadedButton}
         onClose={() => setLoadedButton(undefined)}
+        sx={{
+          "& .MuiPaper-root": {
+            width: 320,
+            paddingY: 0,
+          },
+        }}
+        transitionDuration={{
+          enter: 300,
+          exit: 0,
+        }}
       >
         {children}
       </Popover>
