@@ -1,6 +1,5 @@
 import { ReactNode, useState } from "react";
 import { useOrganizationId, usePermissions } from "hooks";
-import { useImagePreloading } from "./useImagePreloading";
 
 import { useQuery } from "@tanstack/react-query";
 import { type Template } from "api/typesGenerated";
@@ -142,8 +141,6 @@ export function WorkspacesButton() {
       };
     },
   });
-
-  useImagePreloading(templatesQuery.data?.icons);
 
   // Dataset should always be small enough that client-side filtering should be
   // good enough. Can swap out down the line if it becomes an issue
