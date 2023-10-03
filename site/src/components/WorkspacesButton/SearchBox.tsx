@@ -13,9 +13,10 @@ import { type SystemStyleObject } from "@mui/system";
 type Props = {
   value: string;
   onValueChange: (newValue: string) => void;
-  onKeyDown?: (event: KeyboardEvent) => void;
+
   placeholder?: string;
   label?: string;
+  onKeyDown?: (event: KeyboardEvent) => void;
   sx?: SystemStyleObject;
 };
 
@@ -37,34 +38,38 @@ export const SearchBox = forwardRef(function SearchBox(
     <Box
       sx={{
         display: "flex",
+        flexFlow: "row nowrap",
         alignItems: "center",
-        paddingLeft: 2,
-        paddingRight: 2,
-        height: 40,
+        paddingX: 2,
+        height: "40px",
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
         ...sx,
       }}
       onKeyDown={onKeyDown}
     >
-      <SearchIcon
-        sx={{
-          fontSize: 14,
-          color: (theme) => theme.palette.text.secondary,
-        }}
-      />
+      <Box component="div" sx={{ width: "18px" }}>
+        <SearchIcon
+          sx={{
+            display: "block",
+            fontSize: "14px",
+            marginX: "auto",
+            color: (theme) => theme.palette.text.secondary,
+          }}
+        />
+      </Box>
 
       <Box component="label" sx={visuallyHidden} htmlFor={inputId}>
         {label}
       </Box>
 
       <Box
-        id={inputId}
-        tabIndex={0}
         component="input"
         type="text"
-        placeholder={placeholder}
-        autoFocus
         ref={ref}
+        id={inputId}
+        autoFocus
+        tabIndex={0}
+        placeholder={placeholder}
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
         sx={{
@@ -72,7 +77,6 @@ export const SearchBox = forwardRef(function SearchBox(
           border: 0,
           background: "none",
           width: "100%",
-          paddingLeft: 2,
           outline: 0,
           "&::placeholder": {
             color: (theme) => theme.palette.text.secondary,

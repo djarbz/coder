@@ -19,6 +19,7 @@ import { EmptyState } from "components/EmptyState/EmptyState";
 import { Avatar } from "components/Avatar/Avatar";
 
 const ICON_SIZE = 18;
+const COLUMN_GAP = 1.5;
 
 function sortTemplatesByUsersDesc(
   templates: readonly Template[],
@@ -48,14 +49,11 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
       <Box
         sx={{
           display: "flex",
-          columnGap: 1,
+          columnGap: COLUMN_GAP,
           alignItems: "center",
           paddingX: 2,
-          marginBottom: 2,
+          paddingY: 1,
           overflowY: "hidden",
-          "&:first-of-type": {
-            marginTop: 2,
-          },
         }}
       >
         <Avatar
@@ -163,6 +161,8 @@ export function WorkspacesButton() {
 
   return (
     <PopoverContainer
+      // Stopgap value until bug where string-based horizontal origin isn't
+      // being applied consistently can get figured out
       originX={-115}
       originY="bottom"
       sx={{ display: "flex", flexFlow: "column nowrap" }}
@@ -177,10 +177,18 @@ export function WorkspacesButton() {
         onValueChange={(newValue) => setSearchTerm(newValue)}
         placeholder="Type/select a workspace template"
         label="Template select for workspace"
-        sx={{ flexShrink: 0 }}
+        sx={{ flexShrink: 0, columnGap: COLUMN_GAP }}
       />
 
-      <OverflowY maxHeight={380} sx={{ flexShrink: 1 }}>
+      <OverflowY
+        maxHeight={380}
+        sx={{
+          flexShrink: 1,
+          display: "flex",
+          flexFlow: "column nowrap",
+          paddingY: 1,
+        }}
+      >
         {templatesQuery.isLoading ? (
           <Loader size={14} />
         ) : (
@@ -202,13 +210,13 @@ export function WorkspacesButton() {
               display: "flex",
               flexFlow: "row nowrap",
               alignItems: "center",
-              columnGap: 1,
+              columnGap: COLUMN_GAP,
               borderTop: (theme) => `1px solid ${theme.palette.divider}`,
             }}
           >
             <Box component="span" sx={{ width: `${ICON_SIZE}px` }}>
               <OpenIcon
-                sx={{ fontSize: "14px", marginX: "auto", display: "block" }}
+                sx={{ fontSize: "16px", marginX: "auto", display: "block" }}
               />
             </Box>
             <span>See all templates</span>
