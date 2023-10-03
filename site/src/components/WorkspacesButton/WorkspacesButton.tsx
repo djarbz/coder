@@ -45,6 +45,16 @@ function WorkspaceResultsRow({ template }: { template: Template }) {
       // Sending user directly to workspace creation page for UX
       // reasons; avoids extra clicks on the user's part
       to={`/templates/${template.name}/workspace`}
+      sx={{
+        textDecoration: "none",
+        outline: "none",
+        "&:focus": {
+          backgroundColor: (theme) => theme.palette.action.focus,
+        },
+        "&:hover": {
+          backgroundColor: (theme) => theme.palette.action.hover,
+        },
+      }}
     >
       <Box
         sx={{
@@ -203,7 +213,16 @@ export function WorkspacesButton() {
       </OverflowY>
 
       {permissions.createTemplates && (
-        <Link component={RouterLink} to="/templates">
+        <Link
+          component={RouterLink}
+          to="/templates"
+          sx={{
+            outline: "none",
+            "&:focus": {
+              backgroundColor: (theme) => theme.palette.action.focus,
+            },
+          }}
+        >
           <Box
             sx={{
               padding: 2,
