@@ -2221,6 +2221,7 @@ AuthorizationObject can represent a "set" of objects, such as: all workspaces in
       "default_schedule": "string"
     },
     "verbose": true,
+    "web_terminal_renderer": "string",
     "wgtunnel_host": "string",
     "wildcard_access_url": {
       "forceQuery": true,
@@ -2588,6 +2589,7 @@ AuthorizationObject can represent a "set" of objects, such as: all workspaces in
     "default_schedule": "string"
   },
   "verbose": true,
+  "web_terminal_renderer": "string",
   "wgtunnel_host": "string",
   "wildcard_access_url": {
     "forceQuery": true,
@@ -2661,6 +2663,7 @@ AuthorizationObject can represent a "set" of objects, such as: all workspaces in
 | `update_check`                       | boolean                                                                                              | false    |              |                                                                    |
 | `user_quiet_hours_schedule`          | [codersdk.UserQuietHoursScheduleConfig](#codersdkuserquiethoursscheduleconfig)                       | false    |              |                                                                    |
 | `verbose`                            | boolean                                                                                              | false    |              |                                                                    |
+| `web_terminal_renderer`              | string                                                                                               | false    |              |                                                                    |
 | `wgtunnel_host`                      | string                                                                                               | false    |              |                                                                    |
 | `wildcard_access_url`                | [clibase.URL](#clibaseurl)                                                                           | false    |              |                                                                    |
 | `write_config`                       | boolean                                                                                              | false    |              |                                                                    |
